@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1. Checkout
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup Nodee
+      # 2. Setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -26,40 +26,24 @@ jobs:
 
       # 4. Create JWT key file
       - name: Create JWT Key
-        run: echo "${{ secrets.SF_JWT_KEY }}" > server.key
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
 
-      # 5. Authenticate
+      # 5. Authenticate (SINGLE LINE FIX)
       - name: Authenticate Org
         run: |
-          sf org login jwt \
-          --client-id ${{ secrets.SF_CLIENT_ID }} \
-          --jwt-key-file server.key \
-          --username ${{ secrets.SF_USERNAME }} \
-          --instance-url ${{ vars.SF_INSTANCE_URL }}
+          sf org login jwt --client-id ${{ secrets.SF_CLIENT_ID }} --jwt-key-file server.key --username ${{ secrets.SF_USERNAME }} --instance-url ${{ vars.SF_INSTANCE_URL }}
 
-      # 6. Validate Deployment
+      # 6. Verify Login (DEBUG STEP)
+      - name: Verify Org
+        run: sf org list
+
+      # 7. Validate Deployment
       - name: Validate Deployment
         run: |
-          sf project deploy start \
-          --source-dir force-app \
-          --check-only \
-          --test-level RunLocalTests \
-          --wait 20
-
-      # 7. Run Apex Tests
-      - name: Run Apex Tests
-        run: |
-          sf apex run test \
-          --result-format human \
-          --wait 20
+          sf project deploy start --source-dir force-app --target-org ${{ secrets.SF_USERNAME }} --check-only --test-level RunLocalTests --wait 20
 
       # 8. Deploy
       - name: Deploy to Salesforce
         run: |
-          sf project deploy start \
-          --source-dir force-app \
-          --wait 20
-
-      # 9. Show Org Info 
-      - name: Display Org Info
-        run: sf org display
+          sf project deploy start --source-dir force-app --target-org ${{ secrets.SF_USERNAME }} --wait 20
