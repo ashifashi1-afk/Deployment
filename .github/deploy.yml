@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup Node
+      # 2. Setup Nodee
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
