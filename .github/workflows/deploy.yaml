@@ -10,38 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout Repository
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # Install Salesforce CLI
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
-      # Install SFDX Git Delta Plugin
       - name: Install SFDX Git Delta
-         run: npm install -g sfdx-git-delta
+        run: npm install -g sfdx-git-delta
 
-      - name: Generate Delta Package
-        run: |
-          sgd source delta \
-            --to "HEAD" \
-            --from "HEAD~1" \
-            --output-dir delta \
-            --generate-delta
-            # Create JWT Key File
-            - name: Create JWT Key
-              run: echo "${{ secrets.SF_JWT_KEY }}" > server.key
+      - name: Create JWT Key
+        run: echo "${{ secrets.SF_JWT_KEY }}" > server.key
 
-      # Authenticate Salesforce Org
       - name: Authenticate Org
         run: |
           sf org login jwt \
@@ -51,39 +38,28 @@ jobs:
             --instance-url ${{ vars.SF_INSTANCE_URL }} \
             --set-default
 
-      # Verify Connected Org
       - name: Verify Org
         run: sf org display
 
-      # Generate Delta Package
       - name: Generate Delta Package
         run: |
-          sf sgd source delta \
+          sgd source delta \
             --to "HEAD" \
             --from "HEAD~1" \
             --output-dir delta \
             --generate-delta
 
-      # Show Delta Files
-      - name: Display Delta Package
-        run: |
-          ls -R delta
-
-      # Validate Deployment
-      - name: Validate Delta Deployment
+      - name: Validate Deployment
         run: |
           sf project deploy validate \
             --manifest delta/package/package.xml \
-            --post-destructive-changes delta/destructiveChanges/destructiveChanges.xml \
             --target-org ${{ secrets.SF_USERNAME }} \
             --test-level RunLocalTests \
             --wait 20
 
-      # Deploy Delta Changes
       - name: Deploy Delta Changes
         run: |
           sf project deploy start \
             --manifest delta/package/package.xml \
-            --post-destructive-changes delta/destructiveChanges/destructiveChanges.xml \
             --target-org ${{ secrets.SF_USERNAME }} \
             --wait 20
