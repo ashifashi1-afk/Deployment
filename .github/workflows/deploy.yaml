@@ -41,9 +41,13 @@ jobs:
       - name: Verify Org
         run: sf org display
 
+      - name: Install SFDX Git Delta
+        run: |
+          echo y | sf plugins install sfdx-git-delta
+
       - name: Generate Delta Package
         run: |
-          sgd source delta \
+          sf sgd source delta \
             --to HEAD \
             --from HEAD~1 \
             --output-dir delta \
