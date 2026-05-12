@@ -27,7 +27,7 @@ public with sharing class CaseContactMatcher {
         public String message;
     }
 
-    // ===== MAIN METHOD =====
+    // ===== MAIN METHOD/1 =====
     @InvocableMethod(label='Match Case and Contact' description='Match using Name + PostalCode + Request Number')
     public static List<Response> matchCaseContact(List<Request> requestList) {
 
