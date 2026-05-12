@@ -56,7 +56,17 @@ jobs:
             --output-dir delta \
             --generate-delta
 
+      - name: Check Package.xml Exists
+        id: check_package
+        run: |
+          if [ -f delta/package/package.xml ]; then
+            echo "package_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "package_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Validate Deployment
+        if: steps.check_package.outputs.package_exists == 'true'
         run: |
           sf project deploy validate \
             --manifest delta/package/package.xml \
@@ -65,6 +75,7 @@ jobs:
             --wait 20
 
       - name: Deploy to Salesforce
+        if: steps.check_package.outputs.package_exists == 'true'
         run: |
           sf project deploy start \
             --manifest delta/package/package.xml \
