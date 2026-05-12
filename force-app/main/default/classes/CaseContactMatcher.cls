@@ -15,7 +15,7 @@ public with sharing class CaseContactMatcher {
         public String requestNumber; // CaseNumber
     }
 
-    // ===== OUTPUT CLASS =====
+    // ===== OUTPUT CLASS1 =====
     public class Response {
         @InvocableVariable
         public String caseStatus;
