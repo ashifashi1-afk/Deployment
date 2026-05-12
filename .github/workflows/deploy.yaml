@@ -45,6 +45,9 @@ jobs:
         run: |
           echo y | sf plugins install sfdx-git-delta
 
+      - name: Create Delta Folder
+        run: mkdir delta
+
       - name: Generate Delta Package
         run: |
           sf sgd source delta \
