@@ -28,12 +28,18 @@ jobs:
 
       # Install SFDX Git Delta Plugin
       - name: Install SFDX Git Delta
-        run: |
-          echo y | sf plugins install sfdx-git-delta
+         run: npm install -g sfdx-git-delta
 
-      # Create JWT Key File
-      - name: Create JWT Key
-        run: echo "${{ secrets.SF_JWT_KEY }}" > server.key
+      - name: Generate Delta Package
+        run: |
+          sgd source delta \
+            --to "HEAD" \
+            --from "HEAD~1" \
+            --output-dir delta \
+            --generate-delta
+            # Create JWT Key File
+            - name: Create JWT Key
+              run: echo "${{ secrets.SF_JWT_KEY }}" > server.key
 
       # Authenticate Salesforce Org
       - name: Authenticate Org
